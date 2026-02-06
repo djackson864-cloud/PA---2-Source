@@ -6,6 +6,7 @@
 #include <chrono>
 #include <random>
 #include <numeric>
+#include <cmath>
 
 using namespace std;
 using namespace std::chrono;
@@ -21,7 +22,7 @@ void merge(vector<int>& arr, int left, int mid, int right) {
     for (int i = 0; i < n1; ++i) {
         L[i] = arr[left + i];
     }
-    
+
     for (int j = 0; j < n2; ++j) {
         R[j] = arr[mid + 1 + j];
     }
@@ -34,7 +35,7 @@ void merge(vector<int>& arr, int left, int mid, int right) {
         if (L[i] <= R[j]) {
             arr[k] = L[i];
             i++;
-        } 
+        }
         else {
             arr[k] = R[j];
             j++;
@@ -81,15 +82,27 @@ vector<int> generateRandomArray(int n) {
     return arr;
 }
 
+//Function to clear existing content inside csv
+void csvClearer(const string& filename) {
+    ofstream file;
+    file.open(filename, ios::trunc);  // ios::trunc = clear existing content
+
+    file << "Input size n for Array_i,Value of n*logn,Time spent(milliseconds),Value of(n*logn)/time" << endl;
+    file.close();
+}
+
 // Function to generate csv files
-
-
-
-
-
+void generateCSVFile(const string& filename, int arraySize, int valueNLogN, double timeSpent, double valueNLogTime) {
+    ofstream file;
+    file.open(filename, ios::app);
+    file << arraySize << "," << valueNLogN << ","  << timeSpent << ", " << scientific << setprecision(3)<< valueNLogTime << endl;
+    file.close();
+}
 
 
 int main() {
+    //Calls function to clear csv before looping
+    csvClearer("Mergesort_Time.csv");
 
     // for loop that asks user to enter size 9 times
     for (int i = 1; i <= 9; ++i) {
@@ -110,10 +123,12 @@ int main() {
         chrono::duration<double, milli> duration = stop - start;
         cout << "Time taken for merge sort" << n << ": " << duration.count() << " milliseconds" << endl;
 
+        //Value of n*log(base10)n
+        double nlogn = array_size * log10(array_size); 
+        
+        //Value of n*log(base10)n divided by time
+        double value = nlogn / duration.count(); 
         // Write results to CSV
-        
-
-
-        
+            generateCSVFile("Mergesort_Time.csv", array_size, nlogn, duration.count(), value);
     }
 }
